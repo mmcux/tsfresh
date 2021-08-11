@@ -343,7 +343,7 @@ def _roll_out_time_series(
         else:
             timeshift_value = timeshift - 1
         # and now create new ones ids out of the old ones
-        df_temp["id"] = df_temp[column_id].apply(lambda row: (row, timeshift_value))
+        df_temp["id"] = df_temp[column_id].apply(tuple, axis=1).apply(lambda row: row + (timeshift_value,))
 
         return df_temp
 
@@ -482,7 +482,12 @@ def roll_time_series(
             "Your time series container has zero or one rows!. Can not perform rolling."
         )
 
-    if column_id is not None:
+    if column_id is not None and isinstance(column_id, list):
+        if all(item in df.columns for item in column_id):
+            raise AttributeError(
+                "The given columns for the id is not present in the data."
+            )
+    elif column_id is not None and isinstance(column_id, str):
         if column_id not in df:
             raise AttributeError(
                 "The given column for the id is not present in the data."
@@ -491,13 +496,15 @@ def roll_time_series(
         raise ValueError(
             "You have to set the column_id which contains the ids of the different time series"
         )
-
-    if column_kind is not None:
-        grouper = [column_kind, column_id]
-    else:
-        grouper = [
-            column_id,
-        ]
+    grouper = []
+    if column_kind is not None and isinstance(column_id,str):
+        grouper.extend([column_kind, column_id])
+    elif column_kind is not None and isinstance(column_id,list):
+        grouper.append(column_kind).extend(column_id)
+    elif isinstance(column_id, str):
+        grouper.append(column_id)
+    elif isinstance(column_id, list):
+        grouper.extend(column_id)
 
     if column_sort is not None:
         # Require no Nans in column
