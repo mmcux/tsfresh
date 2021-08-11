@@ -585,7 +585,9 @@ def roll_time_series(
     distributor.close()
 
     df_shift = pd.concat(shifted_chunks, ignore_index=True)
-
+    # drop inital column_id if it isn't overwritten already
+    if column_id != "id":
+        df_shift = df_shift.drop(column_id, axis=1)
     return df_shift.sort_values(by=["id", column_sort or "sort"])
 
 
