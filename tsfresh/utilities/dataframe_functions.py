@@ -343,7 +343,10 @@ def _roll_out_time_series(
         else:
             timeshift_value = timeshift - 1
         # and now create new ones ids out of the old ones
-        df_temp["id"] = df_temp[column_id].apply(tuple, axis=1).apply(lambda row: row + (timeshift_value,))
+        if isinstance(column_id, list):
+            df_temp["id"] = df_temp[column_id].apply(tuple, axis=1).apply(lambda row: row + (timeshift_value,))
+        else:
+            df_temp["id"] = df_temp[column_id].apply(lambda row: (row, timeshift_value))
 
         return df_temp
 
@@ -497,9 +500,9 @@ def roll_time_series(
             "You have to set the column_id which contains the ids of the different time series"
         )
     grouper = []
-    if column_kind is not None and isinstance(column_id,str):
+    if column_kind is not None and isinstance(column_id, str):
         grouper.extend([column_kind, column_id])
-    elif column_kind is not None and isinstance(column_id,list):
+    elif column_kind is not None and isinstance(column_id, list):
         grouper.append(column_kind).extend(column_id)
     elif isinstance(column_id, str):
         grouper.append(column_id)
