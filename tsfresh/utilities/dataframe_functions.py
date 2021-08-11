@@ -488,7 +488,7 @@ def roll_time_series(
     if isinstance(column_id, list):
         if not all(item in df.columns for item in column_id):
             raise AttributeError(
-                "The given columns for the id is not present in the data."
+                "The given columns for the id are not present in the data."
             )
     elif isinstance(column_id, str):
         if column_id not in df:
