@@ -347,8 +347,8 @@ def _roll_out_time_series(
             df_temp["id"] = df_temp[column_id].apply(tuple, axis=1).apply(lambda row: row + (timeshift_value,))
         else:
             df_temp["id"] = df_temp[column_id].apply(lambda row: (row, timeshift_value))
-        # feature calculation on column_id not useful
-        return df_temp.drop(column_id, axis=1)
+
+        return df_temp
 
     return [grouped_data.apply(_f)]
 
