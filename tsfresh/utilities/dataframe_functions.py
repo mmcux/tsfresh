@@ -522,7 +522,7 @@ def roll_time_series(
 
             differences = df.groupby(grouper)[column_sort].apply(
                 lambda x: x.values[:-1] - x.values[1:]
-            )
+            ).dropna()
             # Write all of them into one big list
             differences = sum(map(list, differences), [])
             # Test if all differences are the same
