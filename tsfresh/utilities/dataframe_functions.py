@@ -490,6 +490,8 @@ def roll_time_series(
             raise AttributeError(
                 "The given columns for the id are not present in the data."
             )
+        if len(column_id) == 1:
+            column_id = column_id[0]
     elif isinstance(column_id, str):
         if column_id not in df:
             raise AttributeError(
@@ -585,7 +587,7 @@ def roll_time_series(
     distributor.close()
 
     df_shift = pd.concat(shifted_chunks, ignore_index=True)
-    # drop inital column_id if it isn't overwritten already as it is not needed for feature calculation
+    # drop inital column_id if it isn't overwritten already as it is not needed for feature calculation and is included in the id
     if column_id != "id":
         df_shift = df_shift.drop(column_id, axis=1)
     return df_shift.sort_values(by=["id", column_sort or "sort"])
